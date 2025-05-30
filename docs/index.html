@@ -5,22 +5,316 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Neuroflux · AlienOps Labs</title>
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0e0e12;
-      color: #e6e6ec;
+    :root {
+      --primary: #89f0e2;
+      --secondary: #c0c0ff;
+      --accent: #ff6b9d;
+      --bg-dark: #0e0e12;
+      --bg-card: #1a1a22;
+      --text-primary: #e6e6ec;
+      --text-secondary: #b8b8c8;
+      --text-muted: #777;
+    }
+
+    * {
       margin: 0;
-      padding: 2rem;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
       line-height: 1.6;
+      overflow-x: hidden;
     }
-    h1 {
-      font-size: 3rem;
-      color: #89f0e2;
+
+    /* Animated background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at 20% 50%, rgba(137, 240, 226, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(192, 192, 255, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 80%, rgba(255, 107, 157, 0.05) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
     }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 0;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-shadow: 0 0 30px rgba(137, 240, 226, 0.3);
+      animation: glow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 30px rgba(137, 240, 226, 0.3); }
+      to { text-shadow: 0 0 40px rgba(137, 240, 226, 0.6), 0 0 60px rgba(137, 240, 226, 0.3); }
+    }
+
     .subtitle {
       font-size: 1.25rem;
-      color: #c0c0ff;
-      margin-top: -1rem;
+      color: var(--secondary);
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .tagline {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin: 4rem 0;
+    }
+
+    .card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 34, 0.8) 100%);
+      border: 1px solid rgba(137, 240, 226, 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(137, 240, 226, 0.4);
+      box-shadow: 0 10px 30px rgba(137, 240, 226, 0.1);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .card li {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .card li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+
+    .status-live {
+      background: rgba(137, 240, 226, 0.2);
+      color: var(--primary);
+      border: 1px solid rgba(137, 240, 226, 0.3);
+    }
+
+    .status-coming {
+      background: rgba(255, 107, 157, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(255, 107, 157, 0.3);
+    }
+
+    .dashboard-preview {
+      background: var(--bg-card);
+      border: 1px solid rgba(137, 240, 226, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-style: italic;
+      position: relative;
+    }
+
+    .dashboard-preview::before {
+      content: '📊';
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    code {
+      background: var(--bg-card);
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      color: var(--primary);
+      border: 1px solid rgba(137, 240, 226, 0.2);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 6rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(137, 240, 226, 0.1);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tech-tag {
+      background: rgba(192, 192, 255, 0.1);
+      color: var(--secondary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(192, 192, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .hero { padding: 2rem 0; }
+      .grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  
+  <div class="container">
+    <div class="hero">
+      <h1>🧠 NeuroFlux</h1>
+      <p class="subtitle">AlienOps Labs · Cognitive Terrain + Meta-State Debugger</p>
+      <p class="tagline">Real-time cognitive state visualization for neurodivergent operators managing complex multi-agent systems</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>🎯 Core System</h3>
+        <p><strong>NeuroFlux</strong> is a cognitive state visualization and internal debugger tool built for operators who think in systems.</p>
+        <ul>
+          <li>Executive function drift detection</li>
+          <li>Attention pattern mapping</li>
+          <li>Memory loop interference analysis</li>
+          <li>Presence anchoring + emergency reboots</li>
+        </ul>
+        <span class="status-badge status-live">LIVE ALPHA</span>
+      </div>
+
+      <div class="card">
+        <h3>🔧 Active Modules</h3>
+        <ul>
+          <li><strong>Loop Catcher</strong> — visualizes cognitive loops + intrusive thoughts</li>
+          <li><strong>State Mapper</strong> — tags voice input + UI interactions by mental state</li>
+          <li><strong>Anchor Relay</strong> — provides in-context grounding phrases</li>
+          <li><strong>Transition Bridge</strong> — smooth task-switching protocols</li>
+        </ul>
+        <div class="tech-stack">
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">WebRTC</span>
+          <span class="tech-tag">D3.js</span>
+        </div>
+        <span class="status-badge status-live">DEPLOYED</span>
+      </div>
+
+      <div class="card">
+        <h3>📊 Intelligence Dashboards</h3>
+        <p>Real-time cognitive metrics and pattern analysis powered by AI research engines.</p>
+        <div class="dashboard-preview">
+          Perplexity Labs Integration
+          <br><small>Live cognitive state dashboards coming soon</small>
+        </div>
+        <ul>
+          <li>Cognitive load visualization</li>
+          <li>Focus pattern analytics</li>
+          <li>State transition mapping</li>
+          <li>Performance correlation analysis</li>
+        </ul>
+        <span class="status-badge status-coming">INTEGRATION READY</span>
+      </div>
+
+      <div class="card">
+        <h3>🚀 Mission Integration</h3>
+        <p>Connect your cognitive metrics to your operational systems for complete self-awareness.</p>
+        <ul>
+          <li>🧪 <code>persona_ai_project</code> behavioral sync</li>
+          <li>🔭 Wearable API data routing</li>
+          <li>🎛️ Full Mission Flux dashboard view</li>
+          <li>⚡ Real-time accommodation triggers</li>
+        </ul>
+        <span class="status-badge status-coming">Q3 2025</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>AlienOps Labs · Neuroadaptive Cognitive Tools</p>
+      <p>Open Source MIT Licensed · Built for the neurodivergent workforce</p>
+    </div>
+  </div>
+</body>
+</html>      margin-top: -1rem;
     }
     .section {
       margin-top: 2rem;
